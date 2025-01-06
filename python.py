@@ -7,5 +7,8 @@ df = pd.DataFrame({
     'Ids (mA)': [0.02, 0.04, 0.09, 0.15, 0.22]
 })
 
+# Criar o gráfico
 fig = px.line(df, x='Vgs (V)', y='Ids (mA)', title="Curva de Transferência")
-fig.write_html("analysis/graph.html")
+
+# Salvar o gráfico como arquivo HTML
+fig.write_html("docs/graph.html")
