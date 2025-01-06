@@ -11,4 +11,4 @@ df = pd.DataFrame({
 fig = px.line(df, x='Vgs (V)', y='Ids (mA)', title="Curva de Transferência")
 
 # Salvar o gráfico como arquivo HTML
-fig.write_html("docs/graph.html")
+fig.write_html("root/graph.html")
