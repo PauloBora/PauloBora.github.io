@@ -3,31 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Extração automática de figuras de mérito em transistores MOS">
-    <title>Extração de Figuras de Mérito</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Gráfico Dinâmico com Upload</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Extração Automática de Figuras de Mérito</h1>
-        <p>Projeto para análise automática de transistores MOS utilizando Python</p>
-    </header>
-    
-    <main>
-        <section>
-            <h2>Sobre o Projeto</h2>
-            <p>Este projeto utiliza algoritmos Python para a extração de parâmetros como mobilidade, tensão de limiar e outros em transistores MOS. A interface desta página exibe os resultados das análises.</p>
-        </section>
+    <h1>Gerador de Gráficos com Upload de Excel</h1>
+    <form id="upload-form">
+        <label for="file">Selecione um arquivo Excel:</label>
+        <input type="file" id="file" accept=".xlsx, .xls" required>
+        <button type="button" onclick="processExcel()">Gerar Gráfico</button>
+    </form>
+    <div id="graph"></div>
 
-        <section>
-            <h2>Resultados</h2>
-            <p>Veja o gráfico interativo abaixo:</p>
-            <iframe src="graph.html" width="100%" height="600" style="border:none;"></iframe>
-        </section>
-    </main>
+    <script>
+        function processExcel() {
+            const fileInput = document.getElementById('file');
+            const file = fileInput.files[0];
 
-    <footer>
-        <p>&copy; 2025 - Desenvolvido por [Seu Nome]</p>
-    </footer>
+            if (!file) {
+                alert("Por favor, selecione um arquivo!");
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                const data = new Uint8Array(event.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                // Assume que os dados estão na primeira planilha
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+                // Usar os dados da planilha para gerar o gráfico
+                const x = jsonData.slice(1).map(row => row[0]); // Primeira coluna
+                const y = jsonData.slice(1).map(row => row[1]); // Segunda coluna
+
+                const dataPlot = [{
+                    x: x,
+                    y: y,
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'Dados do Excel'
+                }];
+
+                const layout = {
+                    title: 'Gráfico Gerado a partir do Excel',
+                    xaxis: { title: 'Eixo X' },
+                    yaxis: { title: 'Eixo Y' }
+                };
+
+                Plotly.newPlot('graph', dataPlot, layout);
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+    </script>
 </body>
 </html>
